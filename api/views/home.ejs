@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TodoList</title>
+    <%- include("shared/links") ; %>
+    <style>
+        body{
+            background-color: lightslategray ;
+        }
+        nav{
+            height: 100px;
+            border-radius: 17px
+        }
+        .card{
+            border-radius: 12px;
+        }
+        .modal-body{
+            background-color: lightblue;
+        }
+        input{
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Create Task MODAL -->
+    <div class="modal fade" id="information" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New Task</h1>
+                    <!-- <button type="button" class="btn-close"label="Close"></button> -->
+                </div>
+                <div class="modal-body taskmodal_body">
+                    <form onsubmit="createTask(event)">
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Title:</label>
+                            <input type="text" class="form-control" name="title">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Discription[]:</label>
+                            <textarea class="form-control" name="message"></textarea>
+                        </div>
+                        <div class="modal-footer justify-content-between align-items-center">  
+                            <div>
+                                <input type="date" name="time">
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-success" id="save">post Task</button>
+                            </div>
+                            <div class="text-success text-center" id="createTaskMessage">
+                            
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Task MODAL -->
+     <div class="modal fade" id="updatedInfo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">New Task</h1>
+                    <!-- <button type="button" class="btn-close"label="Close"></button> -->
+                </div>
+                <div class="modal-body taskmodal_body">
+                    <form onsubmit="updateTask(event)">
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">Title:</label>
+                            <input type="text" class="form-control" name="updateTitle">
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">Discription[]:</label>
+                            <textarea class="form-control" name="updateMessage"></textarea>
+                        </div>
+                        <div class="modal-footer justify-content-between align-items-center">  
+                            <div>
+                                <input type="date" name="updateTime">
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-success" id="save">Update Task</button>
+                            </div>
+                            <div class="text-success text-center" id="editTaskMessage">
+                            
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <%- include("shared/header",{userLoggedIn:isAuth}) ; %>
+
+    <!-- Tasks/Cards -->
+    <div class="container">
+        <div class="row" id="list">
+            <!-- this is how my card will appear -->
+            <!-- <div class="card mt-5" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's conten</p>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Created at</h6>
+                    <div class="d-flex gap-3 mt-3">
+                        <button type="button" class="btn btn-danger" onclick="">Delete</button>
+                        <button type="button" class="btn btn-warning" >Edit</button>
+                    </div>
+                </div>
+            </div> -->
+
+             <% if(arr.length === 0 && isAuth === false){ %>
+                <p class="text-white text-center mt-5">Please Login your id</p>
+            <% } else if(arr.length === 0 && isAuth === true){ %>
+                <p class="text-white text-center mt-5">start making your tasks<br>Zero tasks</p>
+            <% }else{ %>
+                <% arr.forEach(function(task){ %>
+                        <div class="col-lg-4">
+                            <div class="card mt-5" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= task.Title %></h5>
+                                    <p class="card-text"><%= task.Discription %></p>
+                                    <h6 class="card-subtitle mb-2 text-body-secondary"><%= task.Created_at %></h6>
+                                    <div class="d-flex gap-3 mt-3">
+                                        <button type="button" class="btn btn-danger" onclick="removeTask(<%= task.task_id %>)">Delete</button>
+                                        <button type="button" class="btn btn-warning" onclick="editTask(<%= task.task_id %>)" data-bs-toggle="modal" data-bs-target="#updatedInfo">Edit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+
+
+    <script src="js/home.js"></script>
+</body>
+</html>

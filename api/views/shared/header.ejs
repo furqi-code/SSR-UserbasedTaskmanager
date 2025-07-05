@@ -1,0 +1,24 @@
+<!-- Header -->
+
+<div class="container">
+    <nav class="navbar p-4 <%= userLoggedIn ? 'bg-dark' : 'bg-body-tertiary' %>">
+        <div class="headd">
+            <img src="/images/to-do-list.png" alt="Logo" width="54" class="d-inline-block align-text-top img-fluid">
+        </div>
+        <div><h4 class="<%= userLoggedIn ? 'text-white' : 'text-black' %>">Task Manager</h4></div>
+        <div class="d-flex gap-2">
+            <% if(userLoggedIn) { %>
+                <button type="button" class="btn btn-info shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#information" id="plus">Add</button>
+                <button type="button" class="btn btn-outline-danger shadow-sm rounded-pill px-3" id="clearTasks" onclick="clearTasks()">🗑 Clear</button>
+                <button type="button" class="btn btn-light shadow-sm rounded-pill px-3" id="signOut" onclick="logout()">🚪 Log out</button>
+            <% }else{ %>
+                <a href="http://localhost:10000/signUp" target="_blank">
+                    <button type="button" class="btn btn-success shadow-sm rounded-pill px-4" id="signup">Sign up</button>
+                </a>
+                <a href="http://localhost:10000/signin" target="_blank">
+                    <button type="button" class="btn btn-success shadow-sm rounded-pill px-4" id="signin">🔑 Sign in</button>
+                </a>
+            <% } %>
+        </div>
+    </nav>
+</div>

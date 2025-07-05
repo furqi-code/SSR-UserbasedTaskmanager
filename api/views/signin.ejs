@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <%- include("shared/links") ; %>
+    <style>
+        body{
+            background-color: #0e1111;
+        }
+        .container{
+            background-image: linear-gradient(to right, #CAC531, #F3F9A7);
+            margin-top: 100px; 
+            width: 500px; 
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1{
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-floating{
+            margin-bottom: 15px;
+        }
+        .form-floating label, .form-check label{
+            font-weight: 500;
+        }
+        .form-check-label{
+            font-size: 14px;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0);
+            border-color: #00bcd4;
+        }
+        #signinBtn{
+            background-color: lightseagreen;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+        #signinBtn:hover{
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <!-- Forget Password Modal -->
+    <div class="modal fade" id="forgotPassModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="forgotPassModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4 shadow-sm">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4">
+                    <form onsubmit="forgotPass(event)">
+                        <h1 class="mb-4 fw-semibold text-center" style="font-size: 24px;">Forgot Your Password ?</h1>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control rounded-3" name="email" placeholder="email" required />
+                            <label>Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control rounded-3" name="newPassword" placeholder="New Password" required />
+                            <label>New Password</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control rounded-3" name="confirmPassword" placeholder="Confirm Password" required />
+                            <label>Re-enter Password</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2" style="font-size: 16px;">
+                            Change Password
+                        </button>
+                        <div class="text-success text-center mt-1" id="resetPassMessage"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast hide" id="resetToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <img src="/images/user.png" class="rounded me-2" alt="..." width="35" height="35">
+            <strong class="me-auto">Task Manager</strong>
+            <small class="text-body-secondary">just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Your password has been changed successfully
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container" id="login">
+        <form onsubmit="login(event)">
+            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            <div class="form-floating">
+                <input type="email" class="form-control" name="floatingEmail" placeholder="name@example.com">
+                <label for="floatingEmail">Email address</label>
+            </div>
+            <!-- <div class="col-md-12 form-floating mb-3">
+                <input type="text" class="form-control" id="floatingName" placeholder="Smith">
+                <label for="floatingName" id="labelnep">Username</label>
+            </div> -->
+            <div class="form-floating">
+              <input type="password" class="form-control" name="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">Password</label>
+            </div>
+            <div class="form-check text-start d-flex justify-content-between align-items-center my-3">
+             <div>
+                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">Remember me</label>
+             </div>
+              <input class="btn btn-link" type="button" value="Forgot Password?" data-bs-toggle="modal" data-bs-target="#forgotPassModal" placeholder="Forgot Password" />
+            </div>
+            <div class="d-flex justify-content-between">
+                <button type="submit" class=" py-2" id="signinBtn">Sign in</button>
+            </div>
+        </form>
+    </div>
+
+    
+    <script src="/js/signin.js"></script>
+</body>
+</html> 
