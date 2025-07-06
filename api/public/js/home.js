@@ -1,3 +1,12 @@
+const addModal = new bootstrap.Modal(document.getElementById("information")) ;
+const editModal = new bootstrap.Modal(document.getElementById('updatedInfo'));
+const addToast = new bootstrap.Toast(document.getElementById('addToast'));
+const editToast = new bootstrap.Toast(document.getElementById('editToast'));
+const deleteToast = new bootstrap.Toast(document.getElementById('deleteToast'));
+const clearToast = new bootstrap.Toast(document.getElementById('clearToast'));
+    
+// addToast.show() ;   // working here
+
 function createTask(event)
 {
     const title = event.target.title.value ;
@@ -15,9 +24,11 @@ function createTask(event)
     .then(function(response){
         $("#createTaskMessage").html("Task created, redirecting you to homepage") ;
         $("#createTaskMessage").addClass("text-success") ;
+        addToast.show() ;
+        addModal.hide() ;
             setTimeout(() => {
                 location.reload() ;
-            }, 400);
+            }, 1000);
     })
     .catch(function(error){
         console.log(`Error occured while making task ${error}`) ;
@@ -33,7 +44,10 @@ function clearTasks(token)
         url : "http://localhost:10000/tasks",
     })
     .then(function(response){
-        location.reload() ;
+        clearToast.show() ;
+        setTimeout(() => {
+            location.reload() ;
+        }, 1000);
     })
     .catch(function(error){
         console.log(error) ;
@@ -50,7 +64,10 @@ function removeTask(id)
         }
     })
     .then(function(response){
-        location.reload() ;
+        deleteToast.show() ;
+        setTimeout(() => {
+            location.reload() ;
+        }, 1000);
     })
     .catch(function(error){
         console.log(error) ;
@@ -60,6 +77,24 @@ function removeTask(id)
 let selected_taskid = 0 ;
 function editTask(id){
     selected_taskid = id ;   
+    axios({
+        method : "GET",
+        url : "http://localhost:10000/prefilltasks",
+        params : {
+            id
+        }
+    }).then(function(res){
+         if(res.data.length > 0) 
+        {
+            const task = res.data[0] ;
+            $("#update-title").val(task.Title) ;
+            $("#update-message").val(task.Discription) ;
+            $("#update-time").val(new Date(task.Created_at).toISOString().split("T")[0]); // To format date correctly, isostring ata h mySql se no matter the datatype
+        }
+    })
+    .catch(function(err) {
+        console.error("Prefill error:", err);
+    });
 }
 function updateTask(event)
 {
@@ -79,9 +114,11 @@ function updateTask(event)
     .then(function(response){
         $("#editTaskMessage").html("Task updated, redirecting you to homepage") ;
         $("#editTaskMessage").addClass("text-success") ;
+        editModal.hide() ;
+        editToast.show() ;
             setTimeout(() => {
                 location.reload() ;
-            }, 400);
+            }, 2000);
     })
     .catch(function(error){
          console.log(`Error occured while updating task ${error}`) ;

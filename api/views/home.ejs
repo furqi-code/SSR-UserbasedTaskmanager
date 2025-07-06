@@ -22,6 +22,9 @@
         input{
             border-radius: 5px;
         }
+        /* .toast-container {
+            z-index: 9999;
+        } */
     </style>
 </head>
 <body>
@@ -65,25 +68,25 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">New Task</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Update Task</h1>
                     <!-- <button type="button" class="btn-close"label="Close"></button> -->
                 </div>
                 <div class="modal-body taskmodal_body">
                     <form onsubmit="updateTask(event)">
                         <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" name="updateTitle">
+                            <input type="text" class="form-control" name="updateTitle" id="update-title">
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">Discription[]:</label>
-                            <textarea class="form-control" name="updateMessage"></textarea>
+                            <textarea class="form-control" name="updateMessage" id="update-message"></textarea>
                         </div>
                         <div class="modal-footer justify-content-between align-items-center">  
                             <div>
-                                <input type="date" name="updateTime">
+                                <input type="date" name="updateTime" id="update-time">
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-success" id="save">Update Task</button>
+                                <button type="submit" class="btn btn-success" id="save1">Update Task</button>
                             </div>
                             <div class="text-success text-center" id="editTaskMessage">
                             
@@ -91,6 +94,66 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- add Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast hide" id="addToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <img src="/images/prioritize.png" class="rounded me-2" alt="..." width="30" height="30">
+            <strong class="me-auto">Task Manager</strong>
+            <small class="text-body-secondary">just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Task added in DB
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast hide" id="editToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <img src="/images/prioritize.png" class="rounded me-2" alt="..." width="30" height="30">
+            <strong class="me-auto">Task Manager</strong>
+            <small class="text-body-secondary">just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                this Task got the Update
+            </div>
+        </div>
+    </div>
+
+    <!-- clear all Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast hide" id="clearToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <img src="/images/prioritize.png" class="rounded me-2" alt="..." width="30" height="30">
+            <strong class="me-auto">Task Manager</strong>
+            <small class="text-body-secondary">just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                all Task cleared from DB
+            </div>
+        </div>
+    </div>
+
+    <!-- delete Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast hide" id="deleteToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+            <img src="/images/prioritize.png" class="rounded me-2" alt="..." width="30" height="30">
+            <strong class="me-auto">Task Manager</strong>
+            <small class="text-body-secondary">just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Task deleted
             </div>
         </div>
     </div>
@@ -141,4 +204,4 @@
 
     <script src="js/home.js"></script>
 </body>
-</html>
+</html> 

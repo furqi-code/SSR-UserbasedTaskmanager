@@ -12,6 +12,7 @@ const SECRET = "lifeisbad";
 const PORT = 10000;
 
 app.set("view engine", "ejs");
+app.set("views", __dirname + "/views");
 app.use(express.static(__dirname + "/public")); // js files
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -266,4 +267,21 @@ app.patch("/resetPassword", async function(req,res){
         message : error.message ? error.message : "Something went wrong" 
       })
   }
+})
+
+app.get("/prefilltasks", async function(req,res){
+  try{
+      const task_id = req.query.id ;
+      let existing_task = await connection.query(`select * from tasks where task_id = ?`, [task_id]) ;
+      if(existing_task[0].length > 0){
+          res.status(200).send(existing_task[0]) ;
+      }else{
+          res.status(200).send() ;
+      }
+  }catch(err){
+      console.log(err) ;
+      res.status(500).send({
+          message : err.message ? err.message : "Something went wrong"
+      })
+  }  
 })
