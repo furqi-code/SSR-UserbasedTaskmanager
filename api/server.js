@@ -6,6 +6,11 @@ const mysql = require("mysql2/promise");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const passport = require("passport");
+var GitHubStrategy = require("passport-github").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+require("dotenv").config() ;
+// console.log(process.env)  ;
 
 const SALTROUNDS = 5;
 const SECRET = "lifeisbad";
@@ -17,6 +22,12 @@ app.use(express.static(__dirname + "/public")); // js files
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(passport.initialize()) ;
+app.use(
+  cors({
+    origin : "*"
+  })
+)
 
 let connection;
 app.listen(PORT, async function (){
@@ -78,8 +89,8 @@ app.post("/signUp", async function(req,res){
         const email = req.body.gmail ;
         const gender = req.body.sex ;
         const unique_id = username + "-" + new Date().getTime() ;
-        await connection.query(`insert into users(username, password, email, gender, unique_id) values(?,?,?,?,?)`,
-          [username, bcrypt.hashSync(password, SALTROUNDS), email, gender, unique_id]) ;
+        await connection.query(`insert into users(username, password, email, gender, unique_id, provider) values(?,?,?,?,?,?)`,
+          [username, bcrypt.hashSync(password, SALTROUNDS), email, gender, unique_id, 'local']) ;
         res.status(200).send("User created") ;
       }else{
           throw{
@@ -94,6 +105,7 @@ app.post("/signUp", async function(req,res){
   }
 })
 
+// locally handling user Login in our DB
 app.post("/signin", async function(req,res){
   try{
       if(req.body.gmail && req.body.pass)
@@ -247,6 +259,11 @@ app.patch("/resetPassword", async function(req,res){
       if(existing_user[0].length > 0)
       {
         let dbUser = existing_user[0][0] ;
+        if(dbUser.Provider !== 'local' || dbUser.Provider !== null){
+          return res.status(401).send({
+            message : "Third party logged in users cant Reset their password"
+          })   
+        }
         let update_pass = await connection.query(`update users set Password = ? where user_id = ?`,
           [bcrypt.hashSync(newPassword, SALTROUNDS), dbUser.user_id]) ;
         console.log(update_pass) ;
@@ -284,4 +301,108 @@ app.get("/prefilltasks", async function(req,res){
           message : err.message ? err.message : "Something went wrong"
       })
   }  
+})
+
+// Configure Passport to use Google OAuth
+passport.use(new GoogleStrategy({
+    clientID : process.env.GOOGLE_CLIENTID ,
+    clientSecret : process.env.GOOGLE_CLIENTSECRET ,
+    callbackURL : "/login/google/callback"
+}, async function(accessToken, refreshToken, profile, cb) {
+    try{
+      console.log("passport.use() wala callback wala chl rha h") ;
+      console.log(profile) ;
+      let Username = profile.displayName ;
+      let provider = profile.provider ;
+      let email = profile.emails[0].value ;
+      const user = await connection.query(`select * from users where email = ?`, [email]) ;
+      if(user[0].length  > 0){
+        cb(null, user[0][0]) ;
+      }else{
+        const unique_id = profile.name.givenName + "-" + new Date().getTime() ;
+        await connection.query(`insert into users(Username, Email, Unique_id, Provider) values(?,?,?,?)`, [Username, email, unique_id, provider]) ;
+        const newUser = await connection.query(`select * from users where email = ?`, [email]) ;
+        cb(null, newUser[0][0]) ;
+      }
+    }catch(error){
+        cb(error, false) ;
+    }
+}))
+
+// Configure Passport to use Github
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENTID,
+      clientSecret: process.env.GITHUB_CLIENTSECRET,
+      callbackURL: "/login/github/callback",
+    },
+    async function (accessToken, refreshToken, profile, cb) {
+      try {
+        console.log("passport.use() wala callback wala chl rha h");
+        console.log("GitHub Profile:", profile);
+        let Username = profile.displayName;
+        let provider = profile.provider;
+        let profileUrl = profile.profileUrl; //  Email k column me ye daal rhe
+        const user = await connection.query(`select * from users where username = ?`,[Username]) ;
+        if(user[0].length > 0) {
+          cb(null, user[0][0]);
+        }else {
+          const unique_id = profile.username + "-" + new Date().getTime() ;
+          await connection.query(`insert into users(Username, Email, Unique_id, Provider) values(?,?,?,?)`, [Username, profileUrl, unique_id, provider]);
+          const newUser = await connection.query(`select * from users where username = ?`,[Username]);
+          cb(null, newUser[0][0]);
+        }
+      } catch(error) {
+        cb(error, false);
+      }
+    }
+  )
+)
+
+// OAuth login via Google and GitHub using passport.js
+
+// Sabse pehle ye route chalega → ye Google ki login screen pr redirect karega phir passport config ka verify callback fnc chlega
+app.get('/login/google', passport.authenticate('google',{
+    scope : ['profile', 'email'],
+    prompt: 'consent select_account' // forces account selection on Google ka login screen + re-consent
+}))
+
+// Jab Google login complete ho jata hai, to Google yahan redirect karta hai
+app.get('/login/google/callback', passport.authenticate('google',{
+    session : false
+}), function(req,res,next) {
+    const user = req.user ; 
+    console.log(user) ;
+    const token = jwt.sign(
+      {
+        email : user.Email,
+        unique_id : user.Unique_id
+      },SECRET, {expiresIn: '1h'})
+    res.cookie("token", token, {httpOnly : true}) ;
+    res.redirect('/') ;
+})
+
+
+// Sabse pehle ye route chalega → ye Github ki login screen pr redirect karega phir passport config ka verify callback fnc chlega
+app.get('/login/github', passport.authenticate('github',{
+    // scope : ['profile']
+    // OR
+    scope: ['user:email']
+    // only FB & google gives you account selection ka login screen
+}))
+
+// Jab github login complete ho jata hai, to Github yahan reFB & googlect karta hai
+app.get('/login/github/callback', passport.authenticate('github',{
+    session : false
+}), function(req,res,next) {
+    const user = req.user ; 
+    console.log(user) ;
+    const token = jwt.sign(
+      {
+        email : user.Email,
+        unique_id : user.Unique_id
+      },SECRET, {expiresIn: '1h'})
+    res.cookie("token", token, {httpOnly : true}) ;
+    res.redirect('/') ;
 })

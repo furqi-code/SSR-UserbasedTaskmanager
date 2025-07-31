@@ -7,7 +7,8 @@ create table users(
     Password varchar(100),
     Email varchar(100),
     Gender enum('Male', 'Female', ''),
-    Unique_id varchar(100) unique
+    Unique_id varchar(100) unique,
+    Provider varchar(255)
 );
 
 create table tasks(
@@ -18,6 +19,9 @@ create table tasks(
     Unique_id varchar(100),
     foreign key (Unique_id) references users(Unique_id)	
 );
+
+-- ALTER TABLE Users
+-- ADD Provider varchar(255);
 
 select * from Users ;
 delete from Users where id = 3 ;
